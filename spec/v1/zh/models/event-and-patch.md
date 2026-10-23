@@ -47,7 +47,9 @@ Event 不携带 `producer_revision`、`hlc`、`domain_refs`、通用 `preconditi
 ## 2. Event 提交与业务引用
 
 `semantic_refs[]` 只表达不可由 payload 更清楚表达的业务关系。`role=authorized_by` 的 `id` 必须是
-`ak:grant:`；其它已登记 role 使用 immutable Event reference。排序、可见性和状态 head 不得编码为
+`ak:grant:`；`role=direct_conversation_contact_round` 的 `id` 必须是
+[`contact_round_id`](../identity/contact-and-direct-conversation.md#22-唯一摘要前像) 的 SHA-256 摘要且 `critical=true`；
+其余已登记 role 使用 immutable Event reference。排序、可见性和状态 head 不得编码为
 `semantic_refs[]`。
 
 Poll 改票使用 payload 中的 typed `poll_response_heads[]`，每项同时指明原 poll Event 与被覆盖的 response

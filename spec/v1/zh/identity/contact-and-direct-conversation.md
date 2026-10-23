@@ -342,7 +342,7 @@ glare 分支不存在 responder；`requests[0]` 是 §2 按完整 `request_event
 
 `direct_conversation_genesis` **MUST** 逐项验证，任一不符整组零写入：
 
-1. 该 ref 指向完整 portable Contact round evidence bundle，首次固定身份、本轮 normal/glare 原件、双方 current scope 实例与原源关闭均可验证；
+1. 该 ref 的 `id` **MUST** 为 §2 定义的 `contact_round_id`，采用 `sha256:<64 位小写十六进制>`，`critical` **MUST** 为 `true`；它不是 EventId 或 GrantId。该 ref 指向完整 portable Contact round evidence bundle，首次固定身份、本轮 normal/glare 原件、双方 current scope 实例与原源关闭均可验证；
 2. 按 §5.2/§5.3 求出 `founder`；
 3. `created_by == actor_id == founder`（追加约束，**不**放松既有 `created_by == actor_id`）；
 4. payload 的 `pair_key` 等于从 round 的 `sorted_pair_member_ids` 与 trust domain 重算之值；

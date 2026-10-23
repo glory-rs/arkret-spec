@@ -71,6 +71,53 @@ class EventAdmissionContractTest(unittest.TestCase):
                     ref["id"] = wrong_prefix + "A" * 44
                     self.assertFalse(validator.is_valid(ref))
 
+    def test_contact_round_ref_requires_the_exact_critical_sha256_digest(self):
+        validator = Draft202012Validator({
+            "$ref": "https://arkret.org/v1/schemas/event-envelope.schema.json#/$defs/semantic_ref"
+        }, registry=self.resources)
+        valid = {
+            "id": "sha256:" + "0123456789abcdef" * 4,
+            "role": "direct_conversation_contact_round",
+            "critical": True,
+        }
+        self.assertTrue(validator.is_valid(valid))
+        for wrong_id in [
+            "ak:event:" + "A" * 44,
+            "ak:grant:" + "A" * 44,
+            "blake3:" + "a" * 64,
+            "sha256:" + "A" * 64,
+            "sha256:" + "a" * 63,
+            "sha256:" + "a" * 65,
+            "sha256:" + "g" * 64,
+            "sha256:" + "a" * 64 + "\n",
+            "a" * 64,
+        ]:
+            with self.subTest(wrong_id=wrong_id):
+                self.assertFalse(validator.is_valid({**valid, "id": wrong_id}))
+        for key in valid:
+            with self.subTest(missing=key):
+                self.assertFalse(validator.is_valid({k: v for k, v in valid.items() if k != key}))
+        self.assertFalse(validator.is_valid({**valid, "critical": False}))
+        self.assertFalse(validator.is_valid({**valid, "critical": "true"}))
+        self.assertFalse(validator.is_valid({**valid, "event_id": "ak:event:" + "A" * 44}))
+        self.assertFalse(validator.is_valid({**valid, "role": "unknown_contact_round"}))
+
+    def test_contact_round_digest_does_not_widen_other_reference_roles(self):
+        validator = Draft202012Validator({
+            "$ref": "https://arkret.org/v1/schemas/event-envelope.schema.json#/$defs/semantic_ref"
+        }, registry=self.resources)
+        event_branch = self.envelope["$defs"]["semantic_ref"]["anyOf"][1]
+        for role in event_branch["properties"]["role"]["enum"]:
+            with self.subTest(role=role):
+                for critical in [True, False]:
+                    ref = {"id": "ak:event:" + "A" * 44, "role": role, "critical": critical}
+                    self.assertTrue(validator.is_valid(ref))
+                    self.assertFalse(validator.is_valid({**ref, "id": "sha256:" + "a" * 64}))
+                    self.assertFalse(validator.is_valid({**ref, "id": "ak:grant:" + "A" * 44}))
+        self.assertFalse(validator.is_valid({
+            "id": "sha256:" + "a" * 64, "role": "authorized_by", "critical": True,
+        }))
+
     def test_controller_confirmation_never_falls_back_to_capability_admission(self):
         rows = {row["event_kind"]: row for row in self.canonical["event_kinds"]}
         controller = "agent_controller_self_authored_proof"

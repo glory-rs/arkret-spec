@@ -3544,7 +3544,7 @@
       "description": "Content-addressed accepted-at membership compensation delegation. It is valid only for ak.member.state leave/remove submitted with the matching closed Event submission transport-only membership_compensation_evidence carrier and registered single-use evaluator. This carrier is not an ak:sidecar: Agent Sidecar object and has no participant semantics. The lowercase hex suffix is the sole wire carrier of the delegation digest (encoding.md 4.0.1)."
     },
     "semantic_ref": {
-      "description": "Closed business-reference union. authorized_by names a stable GrantId; all other roles name an immutable Event. Commit continuity is carried only by RealmCommit.previous_commit_ref.",
+      "description": "Closed business-reference union. authorized_by names a stable GrantId; direct_conversation_contact_round names the SHA-256 digest of a portable Contact round and is critical; all other roles name an immutable Event. Commit continuity is carried only by RealmCommit.previous_commit_ref.",
       "anyOf": [
         {
           "type": "object",
@@ -3590,12 +3590,33 @@
                 "capture_stop",
                 "direct_conversation_binding",
                 "direct_conversation_founding_unit",
-                "direct_conversation_contact_round",
                 "direct_conversation_agent_provision"
               ]
             },
             "critical": {
               "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "id",
+            "role",
+            "critical"
+          ],
+          "properties": {
+            "id": {
+              "$ref": "./principal-operations.schema.json#/$defs/digest",
+              "minLength": 71,
+              "maxLength": 71
+            },
+            "role": {
+              "const": "direct_conversation_contact_round"
+            },
+            "critical": {
+              "const": true
             }
           },
           "additionalProperties": false

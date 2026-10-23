@@ -15,12 +15,12 @@
     "optional": "optional and never null."
   },
   "summary": {
-    "total_properties": 10045,
+    "total_properties": 10048,
     "total_schema_documents": 176,
     "by_presence_class": {
       "optional": 2306,
       "optional_defaulted": 48,
-      "required": 7172,
+      "required": 7175,
       "required_nullable": 312,
       "tristate": 207
     },
@@ -6111,6 +6111,9 @@
         "/$defs/semantic_ref/anyOf/1/properties/critical": "required",
         "/$defs/semantic_ref/anyOf/1/properties/id": "required",
         "/$defs/semantic_ref/anyOf/1/properties/role": "required",
+        "/$defs/semantic_ref/anyOf/2/properties/critical": "required",
+        "/$defs/semantic_ref/anyOf/2/properties/id": "required",
+        "/$defs/semantic_ref/anyOf/2/properties/role": "required",
         "/$defs/shared_event_envelope/allOf/1/properties/kind": "required",
         "/allOf/1/then/if/anyOf/0/properties/actor_id": "required",
         "/allOf/1/then/if/anyOf/0/properties/kind": "required",
